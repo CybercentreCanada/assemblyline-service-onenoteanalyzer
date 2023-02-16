@@ -1,0 +1,33 @@
+name: OneNoteAnalyzer
+version: $SERVICE_TAG
+description: >-
+  This service extracts attachements and metadata from Microsoft Onenote files
+  using the C# tool OneNoteAnalyzer - https://github.com/knight0x07/OneNoteAnalyzer.
+
+accepts: document/office/onenote
+rejects: empty|metadata/.*
+
+stage: CORE
+category: Static Analysis
+
+file_required: true
+timeout: 60
+disable_cache: false
+
+enabled: true
+is_external: false
+licence_count: 0
+
+uses_temp_submission_data: false
+
+heuristics:
+  - heur_id: 1
+    name: Executable File(s) found in OneNote Document
+    score: 1000
+    filetype: "document/office/onenote"
+    description: OneNote document with executable(s) inside. Malicious!
+
+docker_config:
+  image: ${REGISTRY}cccs/assemblyline-service-onenoteanalysis:$SERVICE_TAG
+  cpu_cores: 1
+  ram_mb: 512
