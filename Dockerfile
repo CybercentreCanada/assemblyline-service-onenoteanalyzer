@@ -1,11 +1,11 @@
 ARG branch=latest
 FROM cccs/assemblyline-v4-service-base:$branch
 
-ENV SERVICE_PATH frankenstrings.frankenstrings.FrankenStrings
+ENV SERVICE_PATH onenoteanalyzer.onenoteanalyzer.OneNoteAnalyzer
 
 USER root
 
-RUN apt install wget
+RUN apt-get update && apt-get install -y wget
 
 # Install Wine to run OneNoteAnalyzer (C# app using Aspose)
 RUN dpkg --add-architecture i386 && mkdir -pm755 /etc/apt/keyrings && \
