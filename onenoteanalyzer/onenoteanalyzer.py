@@ -6,7 +6,6 @@ Assemblyline service using the OneNoteAnalzer tool to analyze OneNote files.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 import subprocess
 
@@ -38,7 +37,7 @@ class OneNoteAnalyzer(ServiceBase):
     ) -> tuple[ResultSection | None, ResultSection | None, ResultSection | None]:
         return (
             self._make_attachments_section(request, output_dir / "OneNoteAttachments"),
-            self._make_preview_section(request, output_dir / f"ConvertImage_{os.path.basename(request.file_path)}.png"),
+            self._make_preview_section(request, output_dir / f"ConvertImage_{Path(request.file_path).stem}.png"),
             self._make_images_section(request, output_dir / "OneNoteImages"),
         )
 
