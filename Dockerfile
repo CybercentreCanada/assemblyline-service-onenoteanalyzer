@@ -19,12 +19,12 @@ RUN wget -O /opt/al_service/dotNetFx40_Full_x86_x64.exe 'http://download.microso
 # Switch to assemblyline user
 USER assemblyline
 
-# Install dotnet under the AL user in Wine
-RUN wine dotNetFx40_Full_x86_x64.exe /q
-
 # Copy service code
 WORKDIR /opt/al_service
 COPY . .
+
+# Install dotnet under the AL user in Wine
+RUN wine dotNetFx40_Full_x86_x64.exe /q
 
 # Patch version in manifest
 ARG version=4.0.0.dev1
