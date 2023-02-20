@@ -51,7 +51,6 @@ class OneNoteAnalyzer(ServiceBase):
 
     def _make_preview_section(self, request: ServiceRequest, preview_path: Path) -> ResultImageSection | None:
         if preview_path.exists():
-            # Copy to working directory under presumed output filenames
             preview_section = ResultImageSection(request, "OneNote File Image Preview.")
             if preview_section.add_image(
                 str(preview_path), name=preview_path.name, description="OneNote file converted to PNG."
