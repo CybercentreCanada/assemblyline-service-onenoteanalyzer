@@ -5,7 +5,7 @@ ENV SERVICE_PATH onenoteanalyzer.onenoteanalyzer.OneNoteAnalyzer
 
 USER root
 
-RUN apt-get update && apt-get install -y wget
+RUN apt-get update && apt-get install -y wget unzip
 
 # Install Wine to run OneNoteAnalyzer (C# app using Aspose)
 RUN dpkg --add-architecture i386 && mkdir -pm755 /etc/apt/keyrings && \
