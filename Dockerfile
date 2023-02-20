@@ -5,6 +5,7 @@ ENV SERVICE_PATH frankenstrings.frankenstrings.FrankenStrings
 
 USER root
 
+RUN apt install wget
 
 # Install Wine to run OneNoteAnalyzer (C# app using Aspose)
 RUN dpkg --add-architecture i386 && mkdir -pm755 /etc/apt/keyrings && \
