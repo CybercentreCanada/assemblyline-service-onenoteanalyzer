@@ -9,6 +9,8 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 
+from PIL import UnidentifiedImageError
+
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import Result, ResultImageSection, ResultSection
@@ -51,21 +53,37 @@ class OneNoteAnalyzer(ServiceBase):
     def _make_preview_section(self, request: ServiceRequest, preview_path: Path) -> ResultImageSection | None:
         if preview_path.exists():
             preview_section = ResultImageSection(request, "OneNote File Image Preview.")
-            if preview_section.add_image(
-                str(preview_path), name=preview_path.name, description="OneNote file converted to PNG."
-            ):
-                return preview_section
+            try:
+                if preview_section.add_image(
+                    str(preview_path), name=preview_path.name, description="OneNote file converted to PNG."
+                ):
+                    return preview_section
+            except UnidentifiedImageError:
+                request.add_supplementary(
+                    str(preview_path), name=preview_path.name, description="OneNote file converted to PNG."
+                )
+                return ResultSection(
+                    "OneNote File Image Preview.",
+                    body=(
+                        "Preview was generated but could not be displayed."
+                        f"\nSee supplimentary file [{preview_path.name}]"
+                    ),
+                )
+
         return None
 
     def _make_images_section(self, request: ServiceRequest, images_dir: Path) -> ResultImageSection | None:
+        def add_image(section: ResultImageSection, path: Path) -> bool:
+            """Helper function for error handling ResultImageSection.add_image()"""
+            try:
+                return section.add_image(str(path), name=path.name, description="image extracted from OneNote.")
+            except UnidentifiedImageError:
+                return False
+
         if images_dir.exists():
             images_section = ResultImageSection(request, "OneNote Embedded Images")
             if any(
-                images_section.add_image(
-                    str(image_path), name=image_path.name, description="image extracted from OneNote."
-                )
-                for image_path in images_dir.iterdir()
-                if image_path.is_file()
+                add_image(images_section, image_path) for image_path in images_dir.iterdir() if image_path.is_file()
             ):
                 return images_section
         return None
