@@ -28,6 +28,6 @@ heuristics:
     description: OneNote document with executable(s) inside. Malicious!
 
 docker_config:
-  image: ${REGISTRY}cccs/assemblyline-service-onenoteanalysis:$SERVICE_TAG
+  image: ${REGISTRY}cccs/assemblyline-service-onenoteanalyzer:$SERVICE_TAG
   cpu_cores: 1
   ram_mb: 512
