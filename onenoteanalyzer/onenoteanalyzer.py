@@ -51,7 +51,7 @@ class OneNoteAnalyzer(ServiceBase):
         return None
 
     def _make_preview_section(self, request: ServiceRequest, preview_path: Path) -> ResultImageSection | None:
-        if preview_path.exists():
+        if preview_path.exists() and preview_path.stat().st_size:
             preview_section = ResultImageSection(request, "OneNote File Image Preview.")
             try:
                 if preview_section.add_image(
@@ -83,7 +83,9 @@ class OneNoteAnalyzer(ServiceBase):
         if images_dir.exists():
             images_section = ResultImageSection(request, "OneNote Embedded Images")
             if any(
-                add_image(images_section, image_path) for image_path in images_dir.iterdir() if image_path.is_file()
+                add_image(images_section, image_path)
+                for image_path in images_dir.iterdir()
+                if image_path.is_file() and image_path.stat().st_size
             ):
                 return images_section
         return None
