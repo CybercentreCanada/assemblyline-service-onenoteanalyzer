@@ -76,7 +76,8 @@ class OneNoteAnalyzer(ServiceBase):
         def add_image(section: ResultImageSection, path: Path) -> bool:
             """Helper function for error handling ResultImageSection.add_image()"""
             try:
-                return section.add_image(str(path), name=path.name, description="image extracted from OneNote.")
+                section.add_image(str(path), name=path.name, description="image extracted from OneNote.")
+                return True
             except UnidentifiedImageError:
                 return False
 
