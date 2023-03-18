@@ -27,6 +27,24 @@ heuristics:
     filetype: "document/office/onenote"
     description: OneNote document with executable(s) inside. Malicious!
 
+  - heur_id: 2
+    name: Suspicious Keywords
+    description: Suspicious strings found in OneNote Text
+    score: 0
+    signature_score_map:
+      macros_strings: 100
+      ransoware_strings: 100
+      banned_strings: 1
+
+  - heur_id: 2
+    name: Network Indicators
+    description: Network indicators found in OneNote Text
+    score: 0
+    signature_score_map:
+      network_static_url: 0
+      network_static_domain: 0
+      network_static_ip: 100
+
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-onenoteanalyzer:$SERVICE_TAG
   cpu_cores: 1

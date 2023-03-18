@@ -10,14 +10,19 @@ import os
 import subprocess
 
 from pathlib import Path
+from collections import defaultdict
 
 from PIL import UnidentifiedImageError
 
 from assemblyline.common import forge
+from assemblyline.common.str_utils import safe_str
+from assemblyline_v4_service.common.balbuzard.patterns import PatternMatch
 from assemblyline_v4_service.common.base import ServiceBase
+from assemblyline_v4_service.common.extractor.ocr import detections
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import (
     Heuristic,
+    KVSectionBody,
     Result,
     ResultImageSection,
     ResultSection,
@@ -99,12 +104,13 @@ class OneNoteAnalyzer(ServiceBase):
 
     def _make_results(
         self, request: ServiceRequest, output_dir: Path
-    ) -> tuple[ResultSection | None, ResultSection | None, ResultSection | None]:
+    ) -> tuple[ResultSection | None, ResultSection | None, ResultSection | None, ResultSection | None]:
         self._make_hyperlinks_section(request, output_dir / "OneNoteHyperlinks")
         return (
             self._make_attachments_section(request, output_dir / "OneNoteAttachments"),
             self._make_preview_section(request, output_dir / f"ConvertImage_{Path(request.file_path).stem}.png"),
             self._make_images_section(request, output_dir / "OneNoteImages"),
+            self._make_text_section(output_dir / "OneNoteImages"),
         )
 
     def _make_attachments_section(self, request: ServiceRequest, attachments_dir: Path) -> ResultSection | None:
@@ -186,6 +192,41 @@ class OneNoteAnalyzer(ServiceBase):
         ):
             return images_section
         return None
+
+    def _make_text_section(self, text_dir: Path) -> ResultSection | None:
+        if not text_dir.exists():
+            return None
+        patterns = PatternMatch()
+        results: dict[str, list[str]] = defaultdict(list)
+        tags: dict[str, list[str]] = defaultdict(list)
+        for page in text_dir.iterdir():
+            if not page.is_file():
+                continue
+            with page.open("r") as f:
+                text = f.read()
+            if page.name.startswith("1_"):
+                pass  # TODO: impliment password words for first page
+            for tag_type, tags in patterns.ioc_match(text.encode(), True, True):
+                tags[tag_type].extend(safe_str(tag) for tag in tags)
+            for detection_type, indicators in detections(text):
+                results[detection_type].extend(indicators)
+        if not results or tags:
+            return None
+        text_section = ResultSection("OneNote Text")
+        ResultSection(
+            "Suspicious strings found in OneNote Text",
+            KVSectionBody(**results),
+            heuristic=Heuristic(2, signatures={f"{k}_strings": len(v) for k, v in results.items()}),
+            parent=text_section,
+        )
+        ResultSection(
+            "Network Indicators found in OneNote Text",
+            KVSectionBody(**tags),
+            heuristic=Heuristic(3, signatures={k.replace(".", "_"): 1 for k, _ in tags.items()}),
+            tags=tags,
+            parent=text_section,
+        )
+        return text_section
 
     def _make_hyperlinks_section(self, request: ServiceRequest, hyperlinks_dir: Path) -> None:
         # I have no idea what hyperlinks is supposed to be, adding as supplimentary so we can monitor it
