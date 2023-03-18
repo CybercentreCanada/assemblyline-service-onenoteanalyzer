@@ -27,6 +27,7 @@ from assemblyline_v4_service.common.result import (
     ResultImageSection,
     ResultSection,
 )
+from assemblyline_v4_service.common.utils import extract_passwords
 
 
 class OneNoteAnalyzer(ServiceBase):
@@ -110,7 +111,7 @@ class OneNoteAnalyzer(ServiceBase):
             self._make_attachments_section(request, output_dir / "OneNoteAttachments"),
             self._make_preview_section(request, output_dir / f"ConvertImage_{Path(request.file_path).stem}.png"),
             self._make_images_section(request, output_dir / "OneNoteImages"),
-            self._make_text_section(output_dir / "OneNoteImages"),
+            self._make_text_section(request, output_dir / "OneNoteImages"),
         )
 
     def _make_attachments_section(self, request: ServiceRequest, attachments_dir: Path) -> ResultSection | None:
@@ -193,7 +194,7 @@ class OneNoteAnalyzer(ServiceBase):
             return images_section
         return None
 
-    def _make_text_section(self, text_dir: Path) -> ResultSection | None:
+    def _make_text_section(self, request: ServiceRequest, text_dir: Path) -> ResultSection | None:
         if not text_dir.exists():
             return None
         patterns = PatternMatch()
@@ -204,12 +205,17 @@ class OneNoteAnalyzer(ServiceBase):
                 continue
             with page.open("r") as f:
                 text = f.read()
-            if page.name.startswith("1_"):
-                pass  # TODO: impliment password words for first page
+            if page.name.startswith("1_"):  # Keep potential passwords from the first page
+                passwords = extract_passwords(text)
+                if "passwords" in request.temp_submission_data:
+                    request.temp_submission_data["passwords"].extend(passwords)
+                else:
+                    request.temp_submission_data["passwords"] = passwords
             for tag_type, tags in patterns.ioc_match(text.encode(), True, True):
                 tags[tag_type].extend(safe_str(tag) for tag in tags)
             for detection_type, indicators in detections(text):
                 results[detection_type].extend(indicators)
+
         if not results or tags:
             return None
         text_section = ResultSection("OneNote Text")
