@@ -83,8 +83,8 @@ class OneNoteAnalyzer(ServiceBase):
     LAUNCHABLE_TYPE_PREFIX = {"executable", "shortcut"}
 
     def __init__(self, config: dict | None) -> None:
-        self.identify = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lower() == "true")
         super().__init__(config)
+        self.identify = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lower() == "true")
 
     def execute(self, request: ServiceRequest) -> None:
         subprocess.run(

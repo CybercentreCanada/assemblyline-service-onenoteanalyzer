@@ -18,18 +18,19 @@ enabled: true
 is_external: false
 licence_count: 0
 
-uses_temp_submission_data: false
+uses_temp_submission_data: True
 
 heuristics:
   - heur_id: 1
     name: Executable File(s) found in OneNote Document
-    score: 1000
     filetype: "document/office/onenote"
+    score: 1000
     description: OneNote document with executable(s) inside. Malicious!
 
   - heur_id: 2
     name: Suspicious Keywords
     description: Suspicious strings found in OneNote Text
+    filetype: "document/office/onenote"
     score: 0
     signature_score_map:
       macros_strings: 100
@@ -39,6 +40,7 @@ heuristics:
   - heur_id: 2
     name: Network Indicators
     description: Network indicators found in OneNote Text
+    filetype: "document/office/onenote"
     score: 0
     signature_score_map:
       network_static_url: 0
