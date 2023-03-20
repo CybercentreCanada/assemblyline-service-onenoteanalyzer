@@ -37,7 +37,7 @@ heuristics:
       ransoware_strings: 100
       banned_strings: 1
 
-  - heur_id: 2
+  - heur_id: 3
     name: Network Indicators
     description: Network indicators found in OneNote Text
     filetype: "document/office/onenote"
