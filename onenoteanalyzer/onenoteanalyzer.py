@@ -128,7 +128,7 @@ class OneNoteAnalyzer(ServiceBase):
                 file_path.name,
                 "attachment extracted from onenote.",
             )
-            file_type: str = self.identify.fileinfo(file_path)["type"]
+            file_type: str = self.identify.fileinfo(str(file_path))["type"]
             if (
                 file_path.suffix in self.LAUNCHABLE_EXTENSIONS
                 or file_type in self.LAUNCHABLE_TYPE
