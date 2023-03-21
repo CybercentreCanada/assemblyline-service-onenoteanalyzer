@@ -18,7 +18,8 @@ from assemblyline.common import forge
 from assemblyline.common.str_utils import safe_str
 from assemblyline_v4_service.common.balbuzard.patterns import PatternMatch
 from assemblyline_v4_service.common.base import ServiceBase
-from assemblyline_v4_service.common.extractor.ocr import detections
+
+# from assemblyline_v4_service.common.extractor.ocr import detections
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import (
     Heuristic,
@@ -213,8 +214,8 @@ class OneNoteAnalyzer(ServiceBase):
                     request.temp_submission_data["passwords"] = passwords
             for tag_type, tags in patterns.ioc_match(text.encode(), True, True):
                 tags[tag_type].extend(safe_str(tag) for tag in tags)
-            for detection_type, indicators in detections(text):
-                results[detection_type].extend(indicators)
+            # for detection_type, indicators in detections(text):
+            #    results[detection_type].extend(indicators)
 
         if not results or tags:
             return None
