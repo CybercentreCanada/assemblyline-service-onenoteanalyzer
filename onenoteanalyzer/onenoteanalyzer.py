@@ -112,7 +112,7 @@ class OneNoteAnalyzer(ServiceBase):
             self._make_attachments_section(request, output_dir / "OneNoteAttachments"),
             self._make_preview_section(request, output_dir / f"ConvertImage_{Path(request.file_path).stem}.png"),
             self._make_images_section(request, output_dir / "OneNoteImages"),
-            self._make_text_section(request, output_dir / "OneNoteImages"),
+            self._make_text_section(request, output_dir / "OneNoteText"),
         )
 
     def _make_attachments_section(self, request: ServiceRequest, attachments_dir: Path) -> ResultSection | None:
