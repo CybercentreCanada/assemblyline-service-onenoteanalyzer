@@ -216,7 +216,7 @@ class OneNoteAnalyzer(ServiceBase):
             values: set[bytes]
             for tag_type, values in patterns.ioc_match(text.encode(), True, True).items():
                 tags[tag_type].extend(safe_str(tag) for tag in values)
-            for detection_type, indicators in detections(text):
+            for detection_type, indicators in detections(text).items():
                 results[detection_type].extend(indicators)
 
         if not results or tags:
