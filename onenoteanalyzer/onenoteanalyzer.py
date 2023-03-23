@@ -212,7 +212,7 @@ class OneNoteAnalyzer(ServiceBase):
                     request.temp_submission_data["passwords"].extend(passwords)
                 else:
                     request.temp_submission_data["passwords"] = passwords
-            for tag_type, tags in patterns.ioc_match(text.encode(), True, True):
+            for tag_type, tags in patterns.ioc_match(text.encode(), True, True).items():
                 tags[tag_type].extend(safe_str(tag) for tag in tags)
             for detection_type, indicators in detections(text):
                 results[detection_type].extend(indicators)
