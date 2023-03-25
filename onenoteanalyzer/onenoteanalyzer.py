@@ -222,19 +222,23 @@ class OneNoteAnalyzer(ServiceBase):
         if not results or tags:
             return None
         text_section = ResultSection("OneNote Text")
-        ResultSection(
-            "Suspicious strings found in OneNote Text",
-            KVSectionBody(**results),
-            heuristic=Heuristic(2, signatures={f"{k}_strings": len(v) for k, v in results.items()}),
-            parent=text_section,
-        )
-        ResultSection(
-            "Network Indicators found in OneNote Text",
-            KVSectionBody(**tags),
-            heuristic=Heuristic(3, signatures={k.replace(".", "_"): 1 for k, _ in tags.items()}),
-            tags=tags,
-            parent=text_section,
-        )
+        if results:
+            text_section.add_subsection(
+                ResultSection(
+                    "Suspicious strings found in OneNote Text",
+                    KVSectionBody(**results),
+                    heuristic=Heuristic(2, signatures={f"{k}_strings": len(v) for k, v in results.items()}),
+                )
+            )
+        if tags:
+            text_section.add_subsection(
+                ResultSection(
+                    "Network Indicators found in OneNote Text",
+                    KVSectionBody(**tags),
+                    heuristic=Heuristic(3, signatures={k.replace(".", "_"): 1 for k, _ in tags.items()}),
+                    tags=tags,
+                )
+            )
         return text_section
 
     def _make_hyperlinks_section(self, request: ServiceRequest, hyperlinks_dir: Path) -> None:
