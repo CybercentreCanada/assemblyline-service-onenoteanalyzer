@@ -245,9 +245,9 @@ class OneNoteAnalyzer(ServiceBase):
         # I have no idea what hyperlinks is supposed to be, adding as supplimentary so we can monitor it
         if not hyperlinks_dir.exists():
             return
-        expected_file = hyperlinks_dir / "onenote_hyperlinks"
+        expected_file = hyperlinks_dir / "onenote_hyperlinks.txt"
         if not expected_file.exists() and expected_file.is_file():
             return
         request.add_supplementary(
-            expected_file, request.sha256[:8] + expected_file.name, "OneNoteAnalyzer Hyperlinks file"
+            expected_file, request.sha256[:8] + "_onenote_hyperlinks.txt", "OneNoteAnalyzer Hyperlinks file"
         )
