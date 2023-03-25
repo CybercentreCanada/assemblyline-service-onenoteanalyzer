@@ -107,7 +107,7 @@ class OneNoteAnalyzer(ServiceBase):
     def _make_results(
         self, request: ServiceRequest, output_dir: Path
     ) -> tuple[ResultSection | None, ResultSection | None, ResultSection | None, ResultSection | None]:
-        self._make_hyperlinks_section(request, output_dir / "OneNoteHyperlinks")
+        self._make_hyperlinks_section(request, output_dir / "OneNoteHyperLinks")
         return (
             self._make_attachments_section(request, output_dir / "OneNoteAttachments"),
             self._make_preview_section(request, output_dir / f"ConvertImage_{Path(request.file_path).stem}.png"),
@@ -138,7 +138,7 @@ class OneNoteAnalyzer(ServiceBase):
             else:
                 attachments.append(file_path.name)
 
-        if not (attachments or executable_attachments):
+        if not attachments and not executable_attachments:
             return None
         return ResultSection(
             "OneNote Attachments",
@@ -219,7 +219,7 @@ class OneNoteAnalyzer(ServiceBase):
             for detection_type, indicators in detections(text).items():
                 results[detection_type].extend(indicators)
 
-        if not results or tags:
+        if not results and not tags:
             return None
         text_section = ResultSection("OneNote Text")
         if results:
