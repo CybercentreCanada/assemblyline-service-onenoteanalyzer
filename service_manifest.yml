@@ -18,14 +18,35 @@ enabled: true
 is_external: false
 licence_count: 0
 
-uses_temp_submission_data: false
+uses_temp_submission_data: True
 
 heuristics:
   - heur_id: 1
     name: Executable File(s) found in OneNote Document
-    score: 1000
-    filetype: "document/office/onenote"
     description: OneNote document with executable(s) inside. Malicious!
+    filetype: "document/office/onenote"
+    score: 1000
+
+  - heur_id: 2
+    name: Suspicious Keywords
+    description: Suspicious strings found in OneNote Text
+    filetype: "document/office/onenote"
+    score: 0
+    signature_score_map:
+      banned_strings: 1
+      macros_strings: 100
+      ransomware_strings: 100
+
+  - heur_id: 3
+    name: Network Indicators
+    description: Network indicators found in OneNote Text
+    filetype: "document/office/onenote"
+    score: 0
+    signature_score_map:
+      network_static_email: 0
+      network_static_domain: 0
+      network_static_ip: 100
+      network_static_uri: 0
 
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-onenoteanalyzer:$SERVICE_TAG
