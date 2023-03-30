@@ -246,7 +246,7 @@ class OneNoteAnalyzer(ServiceBase):
         if not hyperlinks_dir.exists():
             return
         expected_file = hyperlinks_dir / "onenote_hyperlinks.txt"
-        if not expected_file.exists() and expected_file.is_file():
+        if not expected_file.exists() or not expected_file.is_file():
             return
         request.add_supplementary(
             str(expected_file), request.sha256[:8] + "_onenote_hyperlinks.txt", "OneNoteAnalyzer Hyperlinks file"
